@@ -1,0 +1,325 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.app { padding: 1rem 0; max-width: 680px; }
+.section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.tag { display: flex; align-items: center; gap: 6px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: 20px; padding: 4px 12px; font-size: 13px; color: var(--color-text-primary); }
+.tag button { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 16px; line-height: 1; padding: 0; display: flex; align-items: center; }
+.tag button:hover { color: var(--color-text-primary); }
+.add-row { display: flex; gap: 8px; }
+.add-row input { flex: 1; }
+input, select { font-size: 14px; padding: 6px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); width: 100%; }
+input:focus, select:focus { outline: none; border-color: var(--color-border-primary); }
+button.add-btn { background: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 6px 14px; cursor: pointer; font-size: 13px; color: var(--color-text-primary); white-space: nowrap; }
+button.add-btn:hover { background: var(--color-background-secondary); }
+.expense-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-field label { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; }
+.full-width { grid-column: 1 / -1; }
+button.primary { background: #1D9E75; border: none; border-radius: var(--border-radius-md); padding: 8px 18px; color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 4px; }
+button.primary:hover { background: #0F6E56; }
+.expense-list { display: flex; flex-direction: column; gap: 8px; }
+.expense-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); }
+.expense-icon { width: 36px; height: 36px; border-radius: 50%; background: #E1F5EE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.expense-icon i { font-size: 18px; color: #0F6E56; }
+.expense-info { flex: 1; }
+.expense-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.expense-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.expense-amt { font-size: 15px; font-weight: 500; color: #0F6E56; white-space: nowrap; }
+.del-btn { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 18px; padding: 2px; }
+.del-btn:hover { color: #E24B4A; }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
+.metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.metric-value { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.balance-table { width: 100%; border-collapse: collapse; }
+.balance-table th { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; text-align: left; padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.balance-table td { font-size: 13px; padding: 8px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); }
+.balance-table tr:last-child td { border-bottom: none; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; margin-right: 6px; }
+.settle-list { display: flex; flex-direction: column; gap: 8px; }
+.settle-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); font-size: 13px; }
+.settle-amt { font-weight: 500; color: #0F6E56; margin-left: auto; }
+.arrow-icon { color: var(--color-text-secondary); font-size: 16px; }
+.empty-state { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-size: 13px; }
+.tabs { display: flex; gap: 4px; margin-bottom: 1rem; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 3px; }
+.tab { flex: 1; padding: 7px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); background: none; font-weight: 400; }
+.tab.active { background: var(--color-background-primary); color: var(--color-text-primary); font-weight: 500; border: 0.5px solid var(--color-border-tertiary); }
+.badge-owe { background: #FCEBEB; color: #A32D2D; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 500; }
+.badge-get { background: #E1F5EE; color: #0F6E56; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 500; }
+.badge-even { background: var(--color-background-secondary); color: var(--color-text-secondary); padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+</style>
+
+<div class="app">
+<h2 class="sr-only">Expense splitter — add group members and track who paid what</h2>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('expenses')"><i class="ti ti-receipt" aria-hidden="true"></i> Expenses</button>
+  <button class="tab" onclick="showTab('balances')"><i class="ti ti-scale" aria-hidden="true"></i> Balances</button>
+  <button class="tab" onclick="showTab('settle')"><i class="ti ti-arrows-exchange" aria-hidden="true"></i> Settle up</button>
+</div>
+
+<div id="tab-expenses">
+  <div class="section">
+    <div class="section-title">Group members</div>
+    <div class="tag-list" id="members-list"></div>
+    <div class="add-row">
+      <input type="text" id="member-input" placeholder="Member ka naam..." onkeydown="if(event.key==='Enter')addMember()" />
+      <button class="add-btn" onclick="addMember()"><i class="ti ti-plus" aria-hidden="true"></i> Add</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">New expense add karo</div>
+    <div class="expense-form">
+      <div class="form-field">
+        <label>Description</label>
+        <input type="text" id="exp-desc" placeholder="Dinner, Petrol, Movie..." />
+      </div>
+      <div class="form-field">
+        <label>Amount (₹)</label>
+        <input type="number" id="exp-amt" placeholder="0" min="0" />
+      </div>
+      <div class="form-field">
+        <label>Kisne pay kiya?</label>
+        <select id="exp-payer"></select>
+      </div>
+      <div class="form-field">
+        <label>Kis category mein?</label>
+        <select id="exp-cat">
+          <option value="food">🍽️ Khana / Dining</option>
+          <option value="travel">🚗 Travel</option>
+          <option value="fun">🎬 Entertainment</option>
+          <option value="grocery">🛒 Grocery</option>
+          <option value="other">📦 Other</option>
+        </select>
+      </div>
+      <div class="form-field full-width">
+        <label>Kitno ke beech split karna hai?</label>
+        <div id="split-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+      </div>
+      <div class="full-width">
+        <button class="primary" onclick="addExpense()"><i class="ti ti-plus" aria-hidden="true"></i> Expense add karo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Expenses <span id="exp-count" style="background:var(--color-background-secondary);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:6px;">0</span></div>
+    <div class="expense-list" id="expenses-list">
+      <div class="empty-state"><i class="ti ti-receipt-off" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>Koi expense nahi hai abhi</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-balances" style="display:none;">
+  <div class="section">
+    <div class="section-title">Summary</div>
+    <div class="summary-grid">
+      <div class="metric"><div class="metric-label">Total kharch</div><div class="metric-value" id="s-total">₹0</div></div>
+      <div class="metric"><div class="metric-label">Per person</div><div class="metric-value" id="s-per">₹0</div></div>
+    </div>
+    <table class="balance-table">
+      <thead><tr><th>Member</th><th>Diya</th><th>Lena chahiye</th><th>Balance</th></tr></thead>
+      <tbody id="balance-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-settle" style="display:none;">
+  <div class="section">
+    <div class="section-title">Kise kitna dena hai</div>
+    <div class="settle-list" id="settle-list">
+      <div class="empty-state"><i class="ti ti-confetti" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>Koi pending payment nahi!</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const colors = ['#1D9E75','#534AB7','#D85A30','#BA7517','#378ADD','#D4537E','#639922','#E24B4A'];
+const bgColors = ['#E1F5EE','#EEEDFE','#FAECE7','#FAEEDA','#E6F1FB','#FBEAF0','#EAF3DE','#FCEBEB'];
+const catIcons = {food:'ti-tools-kitchen-2',travel:'ti-car',fun:'ti-device-tv',grocery:'ti-shopping-cart',other:'ti-box'};
+
+let members = [];
+let expenses = [];
+
+function getColor(i) { return colors[i % colors.length]; }
+function getBg(i) { return bgColors[i % bgColors.length]; }
+function getMemberIndex(name) { return members.indexOf(name); }
+
+function addMember() {
+  const inp = document.getElementById('member-input');
+  const name = inp.value.trim();
+  if (!name || members.includes(name)) { inp.value=''; return; }
+  members.push(name);
+  inp.value = '';
+  renderMembers();
+  updatePayerSelect();
+  updateSplitCheckboxes();
+}
+
+function removeMember(name) {
+  members = members.filter(m => m !== name);
+  renderMembers();
+  updatePayerSelect();
+  updateSplitCheckboxes();
+}
+
+function renderMembers() {
+  const list = document.getElementById('members-list');
+  if (members.length === 0) { list.innerHTML = '<span style="font-size:13px;color:var(--color-text-secondary);">Koi member nahi — upar naam likho</span>'; return; }
+  list.innerHTML = members.map((m,i) => `
+    <div class="tag">
+      <span style="width:20px;height:20px;border-radius:50%;background:${getBg(i)};display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:${getColor(i)}">${m[0].toUpperCase()}</span>
+      ${m}
+      <button onclick="removeMember('${m}')" aria-label="Remove ${m}"><i class="ti ti-x" style="font-size:13px;" aria-hidden="true"></i></button>
+    </div>`).join('');
+}
+
+function updatePayerSelect() {
+  const sel = document.getElementById('exp-payer');
+  sel.innerHTML = members.length === 0
+    ? '<option>Pehle member add karo</option>'
+    : members.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+
+function updateSplitCheckboxes() {
+  const box = document.getElementById('split-checkboxes');
+  if (members.length === 0) { box.innerHTML = '<span style="font-size:12px;color:var(--color-text-secondary);">Pehle member add karo</span>'; return; }
+  box.innerHTML = members.map((m,i) => `
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:4px 10px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:var(--color-background-secondary);">
+      <input type="checkbox" checked value="${m}" style="width:auto;margin:0;" />
+      <span style="width:18px;height:18px;border-radius:50%;background:${getBg(i)};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:${getColor(i)}">${m[0].toUpperCase()}</span>
+      ${m}
+    </label>`).join('');
+}
+
+function addExpense() {
+  const desc = document.getElementById('exp-desc').value.trim();
+  const amt = parseFloat(document.getElementById('exp-amt').value);
+  const payer = document.getElementById('exp-payer').value;
+  const cat = document.getElementById('exp-cat').value;
+  const checked = [...document.querySelectorAll('#split-checkboxes input:checked')].map(c => c.value);
+  if (!desc || isNaN(amt) || amt <= 0 || members.length < 2 || checked.length < 1) {
+    alert('Sab fields fill karo aur kam se kam 1 member select karo!'); return;
+  }
+  expenses.push({ id: Date.now(), desc, amt, payer, cat, splitAmong: checked });
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amt').value = '';
+  renderExpenses();
+}
+
+function deleteExpense(id) {
+  expenses = expenses.filter(e => e.id !== id);
+  renderExpenses();
+}
+
+function renderExpenses() {
+  const list = document.getElementById('expenses-list');
+  document.getElementById('exp-count').textContent = expenses.length;
+  if (expenses.length === 0) {
+    list.innerHTML = '<div class="empty-state"><i class="ti ti-receipt-off" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>Koi expense nahi hai abhi</div>';
+    return;
+  }
+  list.innerHTML = expenses.map(e => {
+    const per = (e.amt / e.splitAmong.length).toFixed(2);
+    const pi = getMemberIndex(e.payer);
+    return `<div class="expense-item">
+      <div class="expense-icon" style="background:${getBg(pi)};"><i class="ti ${catIcons[e.cat]}" style="color:${getColor(pi)}" aria-hidden="true"></i></div>
+      <div class="expense-info">
+        <div class="expense-name">${e.desc}</div>
+        <div class="expense-meta"><span style="color:${getColor(pi)};font-weight:500;">${e.payer}</span> ne diya &bull; ₹${per}/person &bull; ${e.splitAmong.length} log</div>
+      </div>
+      <div class="expense-amt">₹${e.amt.toFixed(2)}</div>
+      <button class="del-btn" onclick="deleteExpense(${e.id})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </div>`;
+  }).join('');
+}
+
+function calcBalances() {
+  const paid = {}, owed = {};
+  members.forEach(m => { paid[m] = 0; owed[m] = 0; });
+  expenses.forEach(e => {
+    paid[e.payer] = (paid[e.payer] || 0) + e.amt;
+    const share = e.amt / e.splitAmong.length;
+    e.splitAmong.forEach(m => { owed[m] = (owed[m] || 0) + share; });
+  });
+  const net = {};
+  members.forEach(m => { net[m] = (paid[m] || 0) - (owed[m] || 0); });
+  return { paid, owed, net };
+}
+
+function renderBalances() {
+  const { paid, owed, net } = calcBalances();
+  const total = expenses.reduce((s,e) => s + e.amt, 0);
+  const perPerson = members.length > 0 ? total / members.length : 0;
+  document.getElementById('s-total').textContent = '₹' + total.toFixed(2);
+  document.getElementById('s-per').textContent = '₹' + perPerson.toFixed(2);
+  const tbody = document.getElementById('balance-tbody');
+  if (members.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--color-text-secondary);padding:1rem;">Koi member nahi</td></tr>'; return; }
+  tbody.innerHTML = members.map((m,i) => {
+    const n = net[m] || 0;
+    const badge = n > 0.01 ? `<span class="badge-get">+₹${n.toFixed(2)} milna hai</span>`
+      : n < -0.01 ? `<span class="badge-owe">₹${Math.abs(n).toFixed(2)} dena hai</span>`
+      : `<span class="badge-even">Barabar</span>`;
+    return `<tr>
+      <td><span class="avatar" style="background:${getBg(i)};color:${getColor(i)}">${m[0].toUpperCase()}</span>${m}</td>
+      <td>₹${(paid[m]||0).toFixed(2)}</td>
+      <td>₹${(owed[m]||0).toFixed(2)}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderSettle() {
+  const { net } = calcBalances();
+  const creditors = members.filter(m => (net[m]||0) > 0.01).map(m => ({name:m, amt: net[m]}));
+  const debtors = members.filter(m => (net[m]||0) < -0.01).map(m => ({name:m, amt: -net[m]}));
+  const transactions = [];
+  const c = creditors.map(x => ({...x}));
+  const d = debtors.map(x => ({...x}));
+  let ci = 0, di = 0;
+  while (ci < c.length && di < d.length) {
+    const amt = Math.min(c[ci].amt, d[di].amt);
+    if (amt > 0.01) transactions.push({from: d[di].name, to: c[ci].name, amt});
+    c[ci].amt -= amt; d[di].amt -= amt;
+    if (c[ci].amt < 0.01) ci++;
+    if (d[di].amt < 0.01) di++;
+  }
+  const list = document.getElementById('settle-list');
+  if (transactions.length === 0) {
+    list.innerHTML = '<div class="empty-state"><i class="ti ti-confetti" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>' + (expenses.length === 0 ? 'Pehle kuch expenses add karo!' : 'Sab barabar hai! Koi pending payment nahi.') + '</div>';
+    return;
+  }
+  list.innerHTML = transactions.map(t => {
+    const fi = getMemberIndex(t.from), ti2 = getMemberIndex(t.to);
+    return `<div class="settle-item">
+      <span class="avatar" style="background:${getBg(fi)};color:${getColor(fi)};width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;">${t.from[0].toUpperCase()}</span>
+      <span style="font-weight:500">${t.from}</span>
+      <i class="ti ti-arrow-right arrow-icon" aria-hidden="true"></i>
+      <span class="avatar" style="background:${getBg(ti2)};color:${getColor(ti2)};width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;">${t.to[0].toUpperCase()}</span>
+      <span style="font-weight:500">${t.to}</span>
+      <span class="settle-amt">₹${t.amt.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+}
+
+function showTab(tab) {
+  ['expenses','balances','settle'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i) => {
+    el.classList.toggle('active', ['expenses','balances','settle'][i] === tab);
+  });
+  if (tab === 'balances') renderBalances();
+  if (tab === 'settle') renderSettle();
+}
+
+renderMembers();
+updatePayerSelect();
+updateSplitCheckboxes();
+</script>
