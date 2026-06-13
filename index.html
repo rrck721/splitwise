@@ -1,753 +1,721 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SplitKaro — Expense Splitter</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SplitKaro — Group Expense Splitter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#fef3e0;--cream-dark:#f5e6c8;
+  --teal:#004d53;--teal-mid:#006b73;--teal-light:#e0f2f3;--teal-xlight:#f0fafb;
+  --gold:#dca24b;--gold-light:#fdf0dc;--gold-dark:#b8831a;
+  --text-primary:#1a2e2f;--text-secondary:#4a6b6d;--text-muted:#7a9a9c;
+  --border:#d4e8e9;--danger:#c0392b;--danger-bg:#fdeaea;
+  --success:#1a6b3a;--success-bg:#e8f6ee;
+}
+body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--text-primary);min-height:100vh}
 
-  :root {
-    --cream: #fef3e0;
-    --cream-dark: #f5e6c8;
-    --teal: #004d53;
-    --teal-mid: #006b73;
-    --teal-light: #e0f2f3;
-    --teal-xlight: #f0fafb;
-    --gold: #dca24b;
-    --gold-light: #fdf0dc;
-    --gold-dark: #b8831a;
-    --text-primary: #1a2e2f;
-    --text-secondary: #4a6b6d;
-    --text-muted: #7a9a9c;
-    --border: #d4e8e9;
-    --border-strong: #a8c8ca;
-    --danger: #c0392b;
-    --danger-bg: #fdeaea;
-    --success: #1a6b3a;
-    --success-bg: #e8f6ee;
-  }
+/* ── NAV ── */
+.topbar{background:var(--teal);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,77,83,.18)}
+.logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);display:inline-block}
+.topbar-sub{font-size:12px;color:rgba(255,255,255,.5)}
 
-  body {
-    background: var(--cream);
-    font-family: 'Inter', sans-serif;
-    color: var(--text-primary);
-    min-height: 100vh;
-  }
+/* ── LAYOUT ── */
+.container{max-width:780px;margin:0 auto;padding:2rem 1.25rem 5rem}
 
-  /* NAV */
-  .topbar {
-    background: var(--teal);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,77,83,0.18);
-  }
-  .logo {
-    font-family: 'Sora', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.3px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .logo-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--gold);
-    display: inline-block;
-  }
-  .topbar-sub {
-    font-size: 12px;
-    color: rgba(255,255,255,0.55);
-    font-weight: 400;
-  }
+/* ── TABS ── */
+.tabs{display:flex;background:var(--teal);border-radius:14px;padding:5px;margin-bottom:1.75rem;box-shadow:0 4px 16px rgba(0,77,83,.15)}
+.tab-btn{flex:1;padding:10px 6px;border:none;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;color:rgba(255,255,255,.6);background:transparent;transition:all .2s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.tab-btn:hover{color:rgba(255,255,255,.9)}
+.tab-btn.active{background:var(--gold);color:var(--teal);font-weight:700;box-shadow:0 2px 8px rgba(220,162,75,.4)}
+.tab-btn svg{width:15px;height:15px;flex-shrink:0}
 
-  /* LAYOUT */
-  .container {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-  }
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 1px 4px rgba(0,77,83,.06)}
+.card-title{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  /* TABS */
-  .tabs {
-    display: flex;
-    gap: 0;
-    background: var(--teal);
-    border-radius: 14px;
-    padding: 5px;
-    margin-bottom: 1.75rem;
-    box-shadow: 0 4px 16px rgba(0,77,83,0.15);
-  }
-  .tab-btn {
-    flex: 1;
-    padding: 10px 8px;
-    border: none;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    color: rgba(255,255,255,0.6);
-    background: transparent;
-    transition: all 0.2s;
-    font-family: 'Inter', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-  .tab-btn:hover { color: rgba(255,255,255,0.9); }
-  .tab-btn.active {
-    background: var(--gold);
-    color: var(--teal);
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(220,162,75,0.4);
-  }
-  .tab-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+/* ── MEMBERS ── */
+.members-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;min-height:36px;align-items:center}
+.member-tag{display:flex;align-items:center;gap:7px;background:var(--teal-xlight);border:1px solid var(--border);border-radius:100px;padding:5px 10px 5px 5px;font-size:13px;color:var(--teal);font-weight:500}
+.member-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.member-tag button{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;line-height:1;padding:0 0 0 4px;transition:color .15s}
+.member-tag button:hover{color:var(--danger)}
+.empty-hint{font-size:13px;color:var(--text-muted);font-style:italic}
 
-  /* CARDS */
-  .card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 1px 4px rgba(0,77,83,0.06);
-  }
-  .card-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--teal);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+/* ── INPUTS ── */
+.add-row{display:flex;gap:10px}
+.add-row input{flex:1}
+input[type=text],input[type=number],select{font-family:'Inter',sans-serif;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:var(--text-primary);width:100%;transition:border-color .15s,box-shadow .15s;outline:none;appearance:none;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--teal-mid);box-shadow:0 0 0 3px rgba(0,107,115,.12)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6b6d' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer}
 
-  /* MEMBERS */
-  .members-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; min-height: 36px; align-items: center; }
-  .member-tag {
-    display: flex; align-items: center; gap: 7px;
-    background: var(--teal-xlight);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 5px 10px 5px 5px;
-    font-size: 13px;
-    color: var(--teal);
-    font-weight: 500;
-  }
-  .member-avatar {
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600; flex-shrink: 0;
-  }
-  .member-tag button {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); font-size: 16px; line-height: 1;
-    padding: 0 0 0 4px; display: flex; align-items: center;
-    transition: color 0.15s;
-  }
-  .member-tag button:hover { color: var(--danger); }
-  .empty-members { font-size: 13px; color: var(--text-muted); font-style: italic; }
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:600;color:var(--text-secondary)}
+.full-col{grid-column:1/-1}
 
-  .add-row { display: flex; gap: 10px; }
-  .add-row input { flex: 1; }
+/* ── SPLIT ── */
+.split-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.btn-toggle-all{background:var(--teal-xlight);border:1.5px solid var(--border);border-radius:8px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--teal);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap}
+.btn-toggle-all:hover{background:var(--teal-light);border-color:var(--teal-mid)}
+.btn-toggle-all.all-on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.split-grid{display:flex;flex-wrap:wrap;gap:7px}
+.split-pill{display:flex;align-items:center;gap:6px;padding:5px 12px 5px 6px;border:1.5px solid var(--border);border-radius:100px;font-size:13px;cursor:pointer;color:var(--text-secondary);transition:all .15s;user-select:none}
+.split-pill:hover{border-color:var(--teal-mid);color:var(--teal)}
+.split-pill input{display:none}
+.split-pill.on{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal);font-weight:500}
+.split-preview{font-size:12px;color:var(--gold-dark);margin-top:8px;background:var(--gold-light);border-radius:8px;padding:6px 10px;display:none;font-weight:500}
+.split-preview.vis{display:block}
 
-  /* INPUTS */
-  input[type="text"], input[type="number"], select {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    padding: 9px 13px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    background: #fff;
-    color: var(--text-primary);
-    width: 100%;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  input:focus, select:focus {
-    border-color: var(--teal-mid);
-    box-shadow: 0 0 0 3px rgba(0,107,115,0.12);
-  }
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6b6d' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
-    cursor: pointer;
-  }
+/* ── BUTTONS ── */
+.btn-teal{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:'Inter',sans-serif;transition:background .15s}
+.btn-teal:hover{background:var(--teal-mid)}
+.btn-gold{background:var(--gold);color:var(--teal);border:none;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;width:100%;font-family:'Sora',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;box-shadow:0 2px 8px rgba(220,162,75,.3);margin-top:4px}
+.btn-gold:hover{background:#e8aa52}
+.btn-outline{background:none;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-outline:hover{background:var(--cream);border-color:var(--teal-mid);color:var(--teal)}
+.btn-icon{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;color:var(--text-muted);transition:all .15s}
+.btn-icon.edit:hover{color:var(--teal);background:var(--teal-light)}
+.btn-icon.del:hover{color:var(--danger);background:var(--danger-bg)}
+.btn-icon svg{width:15px;height:15px}
 
-  /* FORM GRID */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .form-field { display: flex; flex-direction: column; gap: 5px; }
-  .form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
-  .full-col { grid-column: 1 / -1; }
+/* ── EXPENSE LIST ── */
+.expense-list{display:flex;flex-direction:column;gap:10px}
+.exp-item{background:var(--teal-xlight);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.exp-main{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.exp-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--cream);border:1px solid var(--cream-dark)}
+.exp-body{flex:1;min-width:0}
+.exp-name{font-size:14px;font-weight:600;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exp-meta{font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.8}
+.exp-meta b{color:var(--teal-mid);font-weight:600}
+.exp-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.exp-amt{font-size:16px;font-weight:700;color:var(--teal);font-family:'Sora',sans-serif}
+.exp-per{font-size:11px;color:var(--gold-dark);font-weight:600;background:var(--gold-light);padding:2px 7px;border-radius:20px;border:1px solid #f0d09a}
+.exp-acts{display:flex;gap:4px;flex-shrink:0}
 
-  /* SPLIT CHECKBOXES */
-  .split-grid { display: flex; flex-wrap: wrap; gap: 7px; }
-  .split-chk-label {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 12px 5px 7px;
-    border: 1.5px solid var(--border);
-    border-radius: 100px;
-    font-size: 13px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .split-chk-label:hover { border-color: var(--teal-mid); color: var(--teal); }
-  .split-chk-label input { display: none; }
-  .split-chk-label.checked {
-    background: var(--teal-light);
-    border-color: var(--teal-mid);
-    color: var(--teal);
-    font-weight: 500;
-  }
+/* ── SPLIT EDITOR ── */
+.split-editor{border-top:1px solid var(--border);padding:14px 16px;background:#fff}
+.se-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.se-title{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em}
+.se-preview{font-size:12px;color:var(--gold-dark);background:var(--gold-light);padding:3px 10px;border-radius:20px;font-weight:600;border:1px solid #f0d09a}
+.se-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.se-actions{display:flex;gap:8px}
+.btn-save{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s}
+.btn-save:hover{background:var(--teal-mid)}
+.btn-cancel{background:none;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-cancel:hover{background:var(--cream)}
 
-  /* BUTTONS */
-  .btn-add {
-    background: var(--teal);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 9px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-    white-space: nowrap;
-    font-family: 'Inter', sans-serif;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .btn-add:hover { background: var(--teal-mid); }
-  .btn-add:active { transform: scale(0.98); }
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text-muted);font-size:13px}
+.empty-state .ei{font-size:38px;margin-bottom:10px;display:block}
 
-  .btn-primary {
-    background: var(--gold);
-    color: var(--teal);
-    border: none;
-    border-radius: 10px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    font-family: 'Sora', sans-serif;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-    box-shadow: 0 2px 8px rgba(220,162,75,0.3);
-    margin-top: 4px;
-  }
-  .btn-primary:hover { background: #e8aa52; box-shadow: 0 4px 14px rgba(220,162,75,0.45); }
-  .btn-primary:active { transform: scale(0.99); }
+/* ── METRICS ── */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.metric-box{background:var(--teal-xlight);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.metric-label{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.metric-val{font-size:20px;font-weight:700;color:var(--teal);font-family:'Sora',sans-serif}
 
-  /* EXPENSE LIST */
-  .expense-list { display: flex; flex-direction: column; gap: 10px; }
-  .exp-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 14px;
-    background: var(--teal-xlight);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    transition: box-shadow 0.15s;
-  }
-  .exp-item:hover { box-shadow: 0 2px 10px rgba(0,77,83,0.08); }
-  .exp-icon {
-    width: 42px; height: 42px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
-    background: var(--cream);
-    border: 1px solid var(--cream-dark);
-  }
-  .exp-body { flex: 1; min-width: 0; }
-  .exp-name { font-size: 14px; font-weight: 600; color: var(--teal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .exp-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .exp-meta b { color: var(--teal-mid); font-weight: 600; }
-  .exp-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-  .exp-amt { font-size: 16px; font-weight: 700; color: var(--teal); font-family: 'Sora', sans-serif; }
-  .exp-per { font-size: 11px; color: var(--gold-dark); font-weight: 600; background: var(--gold-light); padding: 2px 7px; border-radius: 20px; }
-  .btn-del { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; }
-  .btn-del:hover { color: var(--danger); background: var(--danger-bg); }
-  .btn-del svg { width: 15px; height: 15px; }
+/* ── BALANCE TABLE ── */
+.bal-table{width:100%;border-collapse:collapse}
+.bal-table th{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.bal-table td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.bal-table tr:last-child td{border-bottom:none}
+.bal-table tr:hover td{background:var(--teal-xlight)}
+.av-sm{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-right:8px;vertical-align:middle}
+.badge-owe{background:var(--danger-bg);color:var(--danger);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-get{background:var(--success-bg);color:var(--success);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-even{background:var(--cream-dark);color:var(--text-secondary);padding:3px 10px;border-radius:20px;font-size:12px}
 
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center; padding: 2.5rem 1rem;
-    color: var(--text-muted); font-size: 13px;
-  }
-  .empty-state .empty-icon { font-size: 38px; margin-bottom: 10px; display: block; }
+/* ── SETTLE UP ── */
+.settle-list{display:flex;flex-direction:column;gap:10px}
+.settle-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:14px;transition:all .2s;background:var(--teal-xlight)}
+.settle-item.done{background:#f0fff4;border-color:#b7e5c5;opacity:.75}
+.settle-names{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.settle-from,.settle-to{font-weight:600;font-size:14px;color:var(--teal)}
+.settle-item.done .settle-from,.settle-item.done .settle-to{color:#2d7a4a}
+.settle-arrow svg{width:18px;height:18px;color:var(--gold)}
+.settle-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.settle-amt-box{background:var(--gold-light);border:1px solid #f0d09a;border-radius:10px;padding:5px 12px;font-size:15px;font-weight:700;color:var(--gold-dark);font-family:'Sora',sans-serif;white-space:nowrap}
+.settle-item.done .settle-amt-box{background:#e0f7ea;border-color:#a6d9b4;color:#1a6b3a;text-decoration:line-through;opacity:.7}
+.btn-settle{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
+.btn-settle:hover{background:var(--teal-mid)}
+.btn-settled{background:var(--success-bg);color:var(--success);border:1.5px solid #a6d9b4;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.btn-settled:hover{background:#d4f2e0}
+.settled-label{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--success);font-weight:600;margin-top:2px}
 
-  /* SUMMARY METRICS */
-  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
-  .metric-box {
-    background: var(--teal-xlight);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-  .metric-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .metric-val { font-size: 20px; font-weight: 700; color: var(--teal); font-family: 'Sora', sans-serif; }
+/* ── CATEGORIES TAB ── */
+.cat-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem}
+.cat-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--teal-xlight);border:1px solid var(--border);border-radius:12px}
+.cat-emoji-badge{width:38px;height:38px;border-radius:10px;background:var(--cream);border:1px solid var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cat-name{flex:1;font-size:14px;font-weight:500;color:var(--text-primary)}
+.cat-actions{display:flex;gap:4px}
+.cat-default-badge{font-size:10px;background:var(--gold-light);color:var(--gold-dark);border:1px solid #f0d09a;padding:2px 8px;border-radius:20px;font-weight:600}
+.cat-add-form{display:flex;gap:8px;align-items:center}
+.emoji-pick{width:56px;flex-shrink:0;text-align:center;font-size:18px}
 
-  /* BALANCE TABLE */
-  .bal-table { width: 100%; border-collapse: collapse; }
-  .bal-table th {
-    font-size: 11px; font-weight: 600; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.06em;
-    padding: 8px 12px; text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  .bal-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-primary); }
-  .bal-table tr:last-child td { border-bottom: none; }
-  .bal-table tr:hover td { background: var(--teal-xlight); }
-  .av-sm {
-    width: 30px; height: 30px; border-radius: 50%;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; margin-right: 8px; vertical-align: middle;
-  }
-  .badge-owe { background: var(--danger-bg); color: var(--danger); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .badge-get { background: var(--success-bg); color: var(--success); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .badge-even { background: var(--cream-dark); color: var(--text-secondary); padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,77,83,.35);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(2px)}
+.modal-overlay.hidden{display:none}
+.modal{background:#fff;border-radius:20px;padding:1.75rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,77,83,.25)}
+.modal-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--teal);margin-bottom:.5rem}
+.modal-sub{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem}
+.modal-actions{display:flex;gap:10px;margin-top:1.25rem}
+.modal-actions button{flex:1}
 
-  /* SETTLE */
-  .settle-list { display: flex; flex-direction: column; gap: 10px; }
-  .settle-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px;
-    background: var(--teal-xlight);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-  }
-  .settle-names { flex: 1; display: flex; align-items: center; gap: 10px; }
-  .settle-from, .settle-to { font-weight: 600; font-size: 14px; color: var(--teal); }
-  .settle-arrow { color: var(--gold); }
-  .settle-arrow svg { width: 20px; height: 20px; }
-  .settle-amt-box {
-    background: var(--gold-light);
-    border: 1px solid #f0d09a;
-    border-radius: 10px;
-    padding: 6px 14px;
-    font-size: 16px; font-weight: 700;
-    color: var(--gold-dark);
-    font-family: 'Sora', sans-serif;
-    white-space: nowrap;
-  }
+/* ── COUNT BADGE ── */
+.count-badge{background:var(--gold);color:var(--teal);padding:1px 7px;border-radius:20px;font-size:11px;font-weight:700;margin-left:8px}
+.section-hint{font-size:12px;color:var(--text-muted);margin-bottom:10px}
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--teal); color: #fff;
-    padding: 10px 20px; border-radius: 100px;
-    font-size: 13px; font-weight: 500;
-    box-shadow: 0 4px 20px rgba(0,77,83,0.3);
-    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-    z-index: 999; pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--teal);color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,77,83,.3);transition:transform .25s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-  /* COUNT BADGE */
-  .count-badge {
-    background: var(--gold); color: var(--teal);
-    padding: 1px 7px; border-radius: 20px;
-    font-size: 11px; font-weight: 700;
-    margin-left: 8px;
-  }
-
-  /* DIVIDER */
-  .section-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
-
-  @media (max-width: 520px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .metrics-grid { grid-template-columns: 1fr 1fr; }
-    .container { padding: 1.25rem 1rem 4rem; }
-    .topbar { padding: 0 1rem; }
-    .topbar-sub { display: none; }
-  }
+@media(max-width:520px){
+  .form-grid{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:1fr 1fr}
+  .container{padding:1.25rem 1rem 5rem}
+  .topbar{padding:0 1rem}
+  .topbar-sub{display:none}
+  .tab-btn{font-size:11px}
+}
 </style>
 </head>
 <body>
 
 <nav class="topbar">
-  <div class="logo">
-    <span class="logo-dot"></span>
-    SplitKaro
-  </div>
-  <span class="topbar-sub">Group expense splitter</span>
+  <div class="logo"><span class="logo-dot"></span>SplitKaro</div>
+  <span class="topbar-sub">Group Expense Splitter</span>
 </nav>
 
 <div class="container">
-
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('expenses')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 14l2 2 4-4"/><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M8 4V2M16 4V2"/></svg>
-      Expenses
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M9 14l2 2 4-4"/></svg>Expenses
     </button>
     <button class="tab-btn" onclick="showTab('balances')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      Balances
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Balances
     </button>
     <button class="tab-btn" onclick="showTab('settle')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 16l-4-4 4-4M17 8l4 4-4 4M14 4l-4 16"/></svg>
-      Settle Up
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 16l-4-4 4-4M17 8l4 4-4 4"/><path d="M3 12h18"/></svg>Settle Up
+    </button>
+    <button class="tab-btn" onclick="showTab('categories')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h10M4 18h7"/></svg>Categories
     </button>
   </div>
 
-  <!-- EXPENSES TAB -->
+  <!-- ── EXPENSES ── -->
   <div id="tab-expenses">
-
     <div class="card">
       <div class="card-title">Group Members</div>
-      <div class="members-wrap" id="members-list">
-        <span class="empty-members">Koi member nahi — neeche naam likho</span>
-      </div>
+      <div class="members-wrap" id="members-list"><span class="empty-hint">No members yet — add names below</span></div>
       <div class="add-row">
-        <input type="text" id="member-input" placeholder="Member ka naam..." onkeydown="if(event.key==='Enter')addMember()" maxlength="30" />
-        <button class="btn-add" onclick="addMember()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add
+        <input type="text" id="member-input" placeholder="Enter member name..." onkeydown="if(event.key==='Enter')addMember()" maxlength="30"/>
+        <button class="btn-teal" onclick="addMember()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
         </button>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">New Expense</div>
+      <div class="card-title">Add New Expense</div>
       <div class="form-grid">
         <div class="form-field">
           <label class="form-label">Description</label>
-          <input type="text" id="exp-desc" placeholder="Dinner, Petrol, Movie..." maxlength="50" />
+          <input type="text" id="exp-desc" placeholder="Dinner, Petrol, Movie..." maxlength="50"/>
         </div>
         <div class="form-field">
-          <label class="form-label">Amount (₹)</label>
-          <input type="number" id="exp-amt" placeholder="0" min="1" step="any" />
+          <label class="form-label">Amount (&#8377;)</label>
+          <input type="number" id="exp-amt" placeholder="0" min="1" step="any" oninput="updateFormPreview()"/>
         </div>
         <div class="form-field">
-          <label class="form-label">Kisne pay kiya?</label>
+          <label class="form-label">Paid By</label>
           <select id="exp-payer"></select>
         </div>
         <div class="form-field">
           <label class="form-label">Category</label>
-          <select id="exp-cat">
-            <option value="food">🍽️ Khana / Dining</option>
-            <option value="travel">🚗 Travel</option>
-            <option value="fun">🎬 Entertainment</option>
-            <option value="grocery">🛒 Grocery</option>
-            <option value="stay">🏠 Stay</option>
-            <option value="other">📦 Other</option>
-          </select>
+          <select id="exp-cat"></select>
         </div>
         <div class="form-field full-col">
-          <label class="form-label">Kinanke beech split karna hai?</label>
-          <div class="split-grid" id="split-checkboxes">
-            <span class="empty-members">Pehle member add karo</span>
+          <div class="split-header">
+            <label class="form-label" style="margin:0">Split Between</label>
+            <button class="btn-toggle-all all-on" id="form-all-btn" onclick="formToggleAll()">&#10003; Select All</button>
           </div>
+          <div class="split-grid" id="form-split"></div>
+          <div class="split-preview" id="form-preview"></div>
         </div>
         <div class="full-col">
-          <button class="btn-primary" onclick="addExpense()">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Expense Add Karo
+          <button class="btn-gold" onclick="addExpense()">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Expense
           </button>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">
-        Expenses
-        <span class="count-badge" id="exp-count">0</span>
-      </div>
+      <div class="card-title">Expenses <span class="count-badge" id="exp-count">0</span></div>
       <div class="expense-list" id="expenses-list">
-        <div class="empty-state">
-          <span class="empty-icon">🧾</span>
-          Koi expense nahi hai abhi.<br>Upar form bhar ke pehla expense add karo!
-        </div>
+        <div class="empty-state"><span class="ei">&#129446;</span>No expenses yet.<br>Fill the form above to get started!</div>
       </div>
     </div>
-
   </div>
 
-  <!-- BALANCES TAB -->
-  <div id="tab-balances" style="display:none;">
+  <!-- ── BALANCES ── -->
+  <div id="tab-balances" style="display:none">
     <div class="card">
       <div class="card-title">Summary</div>
       <div class="metrics-grid">
-        <div class="metric-box"><div class="metric-label">Total Kharch</div><div class="metric-val" id="s-total">₹0</div></div>
+        <div class="metric-box"><div class="metric-label">Total Spent</div><div class="metric-val" id="s-total">&#8377;0</div></div>
         <div class="metric-box"><div class="metric-label">Expenses</div><div class="metric-val" id="s-count">0</div></div>
-        <div class="metric-box"><div class="metric-label">Per Person</div><div class="metric-val" id="s-per">₹0</div></div>
+        <div class="metric-box"><div class="metric-label">Members</div><div class="metric-val" id="s-members">0</div></div>
       </div>
       <table class="bal-table">
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Diya (₹)</th>
-            <th>Hissa (₹)</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody id="balance-tbody">
-          <tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#7a9a9c;">Koi data nahi</td></tr>
-        </tbody>
+        <thead><tr><th>Member</th><th>Paid (&#8377;)</th><th>Share (&#8377;)</th><th>Balance</th></tr></thead>
+        <tbody id="balance-tbody"><tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#7a9a9c">No data yet</td></tr></tbody>
       </table>
     </div>
   </div>
 
-  <!-- SETTLE TAB -->
-  <div id="tab-settle" style="display:none;">
+  <!-- ── SETTLE UP ── -->
+  <div id="tab-settle" style="display:none">
     <div class="card">
-      <div class="card-title">Kise Kitna Dena Hai</div>
-      <div class="section-hint">Minimum transactions mein sab settle ho jayega</div>
+      <div class="card-title">Who Owes Whom</div>
+      <p class="section-hint">Settled with minimum transactions &mdash; tap <strong>Mark as Paid</strong> once payment is done.</p>
       <div class="settle-list" id="settle-list">
-        <div class="empty-state">
-          <span class="empty-icon">🎉</span>
-          Koi pending payment nahi!<br>Sab barabar hai.
-        </div>
+        <div class="empty-state"><span class="ei">&#127881;</span>All settled up! No pending payments.</div>
       </div>
     </div>
   </div>
 
+  <!-- ── CATEGORIES ── -->
+  <div id="tab-categories" style="display:none">
+    <div class="card">
+      <div class="card-title">Manage Categories</div>
+      <p class="section-hint" style="margin-bottom:1rem">Add, edit or delete expense categories. Default categories cannot be deleted.</p>
+      <div class="cat-list" id="cat-list"></div>
+      <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
+        <div class="card-title" style="margin-bottom:.75rem">Add New Category</div>
+        <div class="cat-add-form">
+          <input type="text" class="emoji-pick" id="cat-emoji" placeholder="&#128230;" maxlength="2" style="text-align:center;font-size:20px"/>
+          <input type="text" id="cat-name-input" placeholder="Category name..." maxlength="30" onkeydown="if(event.key==='Enter')addCategory()"/>
+          <button class="btn-teal" onclick="addCategory()" style="flex-shrink:0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── EDIT CATEGORY MODAL ── -->
+<div class="modal-overlay hidden" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Category</div>
+    <div class="modal-sub">Update the emoji and name for this category.</div>
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <input type="text" id="edit-cat-emoji" style="width:64px;text-align:center;font-size:20px;flex-shrink:0" maxlength="2"/>
+      <input type="text" id="edit-cat-name" placeholder="Category name..." maxlength="30"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-teal" onclick="saveEditCategory()">Save Changes</button>
+      <button class="btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const COLORS = [
+const COLORS=[
   {bg:'#e0f2f3',fg:'#004d53'},{bg:'#fdf0dc',fg:'#8b5e0a'},
   {bg:'#fdeaea',fg:'#7a1a1a'},{bg:'#e8f6ee',fg:'#1a5c35'},
   {bg:'#ede9fe',fg:'#4c1d95'},{bg:'#fce7f3',fg:'#831843'},
   {bg:'#fff7ed',fg:'#7c2d12'},{bg:'#ecfdf5',fg:'#064e3b'}
 ];
-const CAT_EMOJI = {food:'🍽️',travel:'🚗',fun:'🎬',grocery:'🛒',stay:'🏠',other:'📦'};
 
-let members = [], expenses = [];
+// ── DEFAULT CATEGORIES ──
+const DEFAULT_CATS=[
+  {id:'food',emoji:'🍽️',name:'Food & Dining',isDefault:true},
+  {id:'travel',emoji:'🚗',name:'Travel',isDefault:true},
+  {id:'fun',emoji:'🎬',name:'Entertainment',isDefault:true},
+  {id:'grocery',emoji:'🛒',name:'Groceries',isDefault:true},
+  {id:'stay',emoji:'🏠',name:'Accommodation',isDefault:true},
+  {id:'bills',emoji:'💡',name:'Bills & Utilities',isDefault:true},
+  {id:'other',emoji:'📦',name:'Other',isDefault:true},
+];
 
-function color(i){ return COLORS[i % COLORS.length]; }
-function memberIdx(n){ return members.indexOf(n); }
+let members=[], expenses=[], categories=[...DEFAULT_CATS];
+let editId=null, settledSet=new Set(), editCatId=null;
 
-/* TOAST */
-function toast(msg){
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 2200);
+/* ── HELPERS ── */
+function cl(i){return COLORS[i%COLORS.length]}
+function mi(n){return members.indexOf(n)}
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function js(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function uid(){return Date.now()+Math.random().toString(36).slice(2)}
+function toast(msg,success){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.background=success===false?'#c0392b':'#004d53';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2400);
 }
+function getCat(id){return categories.find(c=>c.id===id)||{emoji:'📦',name:'Other'}}
 
-/* MEMBERS */
+/* ══ MEMBERS ══ */
 function addMember(){
-  const inp = document.getElementById('member-input');
-  const name = inp.value.trim();
-  if(!name){ return; }
-  if(members.includes(name)){ toast('Yeh member already hai!'); inp.value=''; return; }
-  members.push(name);
-  inp.value='';
-  renderMembers(); updatePayer(); updateSplit();
-  toast(name + ' add ho gaya ✓');
+  const inp=document.getElementById('member-input');
+  const name=inp.value.trim();
+  if(!name)return;
+  if(members.includes(name)){toast('Member already exists!',false);inp.value='';return}
+  members.push(name);inp.value='';
+  renderMembers();syncPayer();rebuildFormSplit(true);renderExpenses();
+  toast(name+' added to the group ✓');
 }
-
 function removeMember(name){
   if(expenses.some(e=>e.payer===name||e.splitAmong.includes(name))){
-    toast('Pehle is member ki expenses delete karo!'); return;
+    toast('Remove this member\'s expenses first!',false);return;
   }
-  members = members.filter(m=>m!==name);
-  renderMembers(); updatePayer(); updateSplit();
+  members=members.filter(m=>m!==name);
+  renderMembers();syncPayer();rebuildFormSplit(false);renderExpenses();
 }
-
 function renderMembers(){
-  const el = document.getElementById('members-list');
-  if(!members.length){ el.innerHTML='<span class="empty-members">Koi member nahi — neeche naam likho</span>'; return; }
-  el.innerHTML = members.map((m,i)=>{
-    const c = color(i);
+  const el=document.getElementById('members-list');
+  if(!members.length){el.innerHTML='<span class="empty-hint">No members yet — add names below</span>';return}
+  el.innerHTML=members.map((m,i)=>{
+    const c=cl(i);
     return `<div class="member-tag">
       <div class="member-avatar" style="background:${c.bg};color:${c.fg}">${m[0].toUpperCase()}</div>
-      ${m}
-      <button onclick="removeMember('${m.replace(/'/g,"\\'")}')">×</button>
+      ${h(m)}<button onclick="removeMember('${js(m)}')">&#215;</button>
     </div>`;
   }).join('');
 }
-
-function updatePayer(){
-  const sel = document.getElementById('exp-payer');
-  sel.innerHTML = members.length ? members.map(m=>`<option>${m}</option>`).join('') : '<option>Pehle member add karo</option>';
+function syncPayer(){
+  const sel=document.getElementById('exp-payer'),cur=sel.value;
+  sel.innerHTML=members.length
+    ?members.map(m=>`<option value="${h(m)}"${m===cur?' selected':''}>${h(m)}</option>`).join('')
+    :'<option>Add members first</option>';
 }
 
-function updateSplit(){
-  const box = document.getElementById('split-checkboxes');
-  if(!members.length){ box.innerHTML='<span class="empty-members">Pehle member add karo</span>'; return; }
-  box.innerHTML = members.map((m,i)=>{
-    const c = color(i);
-    return `<label class="split-chk-label checked" onclick="toggleChk(this)">
-      <input type="checkbox" checked value="${m}" style="display:none"/>
-      <div class="member-avatar" style="background:${c.bg};color:${c.fg};width:22px;height:22px;font-size:10px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${m[0].toUpperCase()}</div>
-      ${m}
-    </label>`;
+/* ══ CATEGORIES ══ */
+function syncCatSelect(){
+  const sel=document.getElementById('exp-cat'),cur=sel.value;
+  sel.innerHTML=categories.map(c=>`<option value="${h(c.id)}"${c.id===cur?' selected':''}>${c.emoji} ${h(c.name)}</option>`).join('');
+  if(!sel.value&&categories.length)sel.value=categories[0].id;
+}
+function renderCatList(){
+  const el=document.getElementById('cat-list');
+  if(!categories.length){el.innerHTML='<div class="empty-state"><span class="ei">🗂️</span>No categories. Add one below!</div>';return}
+  el.innerHTML=categories.map(c=>`
+    <div class="cat-row" id="cr-${h(c.id)}">
+      <div class="cat-emoji-badge">${c.emoji}</div>
+      <span class="cat-name">${h(c.name)}</span>
+      ${c.isDefault?'<span class="cat-default-badge">Default</span>':''}
+      <div class="cat-actions">
+        <button class="btn-icon edit" onclick="openEditCat('${js(c.id)}')" title="Edit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+        </button>
+        ${!c.isDefault?`<button class="btn-icon del" onclick="deleteCategory('${js(c.id)}')" title="Delete">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>`:''}
+      </div>
+    </div>`).join('');
+}
+function addCategory(){
+  const emoji=document.getElementById('cat-emoji').value.trim()||'📦';
+  const name=document.getElementById('cat-name-input').value.trim();
+  if(!name){toast('Enter a category name.',false);return}
+  if(categories.some(c=>c.name.toLowerCase()===name.toLowerCase())){toast('Category already exists!',false);return}
+  categories.push({id:'cat_'+uid(),emoji,name,isDefault:false});
+  document.getElementById('cat-emoji').value='';
+  document.getElementById('cat-name-input').value='';
+  syncCatSelect();renderCatList();
+  toast(name+' category added ✓');
+}
+function deleteCategory(id){
+  if(expenses.some(e=>e.cat===id)){toast('Remove expenses in this category first!',false);return}
+  categories=categories.filter(c=>c.id!==id);
+  syncCatSelect();renderCatList();
+  toast('Category deleted');
+}
+function openEditCat(id){
+  const cat=getCat(id);editCatId=id;
+  document.getElementById('edit-cat-emoji').value=cat.emoji;
+  document.getElementById('edit-cat-name').value=cat.name;
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+function saveEditCategory(){
+  const emoji=document.getElementById('edit-cat-emoji').value.trim()||'📦';
+  const name=document.getElementById('edit-cat-name').value.trim();
+  if(!name){toast('Enter a name.',false);return}
+  const cat=categories.find(c=>c.id===editCatId);
+  if(cat){cat.emoji=emoji;cat.name=name;}
+  closeModal();syncCatSelect();renderCatList();renderExpenses();
+  toast('Category updated ✓');
+}
+function closeModal(){document.getElementById('edit-modal').classList.add('hidden');editCatId=null}
+document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+/* ══ SPLIT FORM ══ */
+function rebuildFormSplit(keepState){
+  const box=document.getElementById('form-split');
+  const prevChecked=keepState?new Set([...box.querySelectorAll('input:checked')].map(c=>c.value)):null;
+  if(!members.length){box.innerHTML='<span class="empty-hint">Add members first</span>';return}
+  box.innerHTML=members.map((m,i)=>{
+    const c=cl(i);
+    const wasPresent=prevChecked&&[...box.querySelectorAll('input')].some(inp=>inp.value===m);
+    const isChecked=prevChecked?(wasPresent?prevChecked.has(m):true):true;
+    return `<label class="split-pill${isChecked?' on':''}" onclick="formPillClick(this)">
+      <input type="checkbox"${isChecked?' checked':''} value="${h(m)}"/>
+      <div style="background:${c.bg};color:${c.fg};width:22px;height:22px;font-size:10px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700">${m[0].toUpperCase()}</div>
+      ${h(m)}</label>`;
   }).join('');
+  syncAllBtn('form-split','form-all-btn');updateFormPreview();
+}
+function formPillClick(lbl){
+  const chk=lbl.querySelector('input');chk.checked=!chk.checked;lbl.classList.toggle('on',chk.checked);
+  syncAllBtn('form-split','form-all-btn');updateFormPreview();
+}
+function formToggleAll(){
+  const checks=[...document.querySelectorAll('#form-split input')];
+  const allOn=checks.every(c=>c.checked);
+  checks.forEach(c=>{c.checked=!allOn;c.closest('label').classList.toggle('on',!allOn)});
+  syncAllBtn('form-split','form-all-btn');updateFormPreview();
+}
+function syncAllBtn(gridId,btnId){
+  const checks=[...document.querySelectorAll('#'+gridId+' input')];if(!checks.length)return;
+  const allOn=checks.every(c=>c.checked);
+  const btn=document.getElementById(btnId);if(!btn)return;
+  btn.textContent=allOn?'✓ Select All':'Select All';
+  btn.classList.toggle('all-on',allOn);
+}
+function updateFormPreview(){
+  const amt=parseFloat(document.getElementById('exp-amt').value);
+  const sel=[...document.querySelectorAll('#form-split input:checked')];
+  const pr=document.getElementById('form-preview');
+  if(!isNaN(amt)&&amt>0&&sel.length){
+    pr.innerHTML='&#8377;'+amt.toFixed(2)+' &#247; '+sel.length+' people = <strong>&#8377;'+(amt/sel.length).toFixed(2)+' each</strong>';
+    pr.classList.add('vis');
+  }else pr.classList.remove('vis');
 }
 
-function toggleChk(lbl){
-  const chk = lbl.querySelector('input');
-  chk.checked = !chk.checked;
-  lbl.classList.toggle('checked', chk.checked);
-}
-
-/* EXPENSES */
+/* ══ ADD EXPENSE ══ */
 function addExpense(){
-  const desc = document.getElementById('exp-desc').value.trim();
-  const amt  = parseFloat(document.getElementById('exp-amt').value);
-  const payer= document.getElementById('exp-payer').value;
-  const cat  = document.getElementById('exp-cat').value;
-  const split= [...document.querySelectorAll('#split-checkboxes input:checked')].map(c=>c.value);
-
-  if(!desc){ toast('Description likho!'); return; }
-  if(!amt||amt<=0){ toast('Valid amount daalo!'); return; }
-  if(members.length < 2){ toast('Kam se kam 2 members chahiye!'); return; }
-  if(!split.length){ toast('Kam se kam 1 member select karo!'); return; }
-
-  expenses.push({ id: Date.now(), desc, amt, payer, cat, splitAmong: split });
+  const desc=document.getElementById('exp-desc').value.trim();
+  const amt=parseFloat(document.getElementById('exp-amt').value);
+  const payer=document.getElementById('exp-payer').value;
+  const cat=document.getElementById('exp-cat').value;
+  const split=[...document.querySelectorAll('#form-split input:checked')].map(c=>c.value);
+  if(!desc){toast('Enter a description.',false);return}
+  if(!amt||amt<=0){toast('Enter a valid amount.',false);return}
+  if(members.length<2){toast('Add at least 2 members.',false);return}
+  if(!split.length){toast('Select at least 1 person.',false);return}
+  expenses.push({id:Date.now(),desc,amt,payer,cat,splitAmong:split});
   document.getElementById('exp-desc').value='';
   document.getElementById('exp-amt').value='';
-  renderExpenses();
-  toast(desc + ' add ho gaya! ✓');
+  document.getElementById('form-preview').classList.remove('vis');
+  document.querySelectorAll('#form-split input').forEach(c=>{c.checked=true;c.closest('label').classList.add('on')});
+  syncAllBtn('form-split','form-all-btn');
+  renderExpenses();toast(desc+' added ✓');
 }
-
 function delExpense(id){
-  expenses = expenses.filter(e=>e.id!==id);
-  renderExpenses();
-  toast('Expense delete ho gaya');
+  if(editId===id)editId=null;
+  expenses=expenses.filter(e=>e.id!==id);
+  renderExpenses();toast('Expense deleted');
 }
 
+/* ══ RENDER EXPENSES ══ */
 function renderExpenses(){
-  const el = document.getElementById('expenses-list');
-  document.getElementById('exp-count').textContent = expenses.length;
+  const el=document.getElementById('expenses-list');
+  document.getElementById('exp-count').textContent=expenses.length;
   if(!expenses.length){
-    el.innerHTML=`<div class="empty-state"><span class="empty-icon">🧾</span>Koi expense nahi hai abhi.<br>Upar form bhar ke pehla expense add karo!</div>`;
-    return;
+    el.innerHTML='<div class="empty-state"><span class="ei">&#129446;</span>No expenses yet.<br>Fill the form above to get started!</div>';return;
   }
-  el.innerHTML = expenses.map(e=>{
-    const pi = memberIdx(e.payer);
-    const pc = color(pi < 0 ? 0 : pi);
-    const per = (e.amt / e.splitAmong.length).toFixed(2);
-    return `<div class="exp-item">
-      <div class="exp-icon">${CAT_EMOJI[e.cat]||'📦'}</div>
-      <div class="exp-body">
-        <div class="exp-name">${e.desc}</div>
-        <div class="exp-meta">
-          <b style="color:${pc.fg}">${e.payer}</b> ne diya &nbsp;·&nbsp; ${e.splitAmong.length} log mein split
+  el.innerHTML=expenses.map(e=>{
+    const pi=mi(e.payer),pc=cl(pi<0?0:pi);
+    const per=(e.amt/e.splitAmong.length).toFixed(2);
+    const cat=getCat(e.cat);
+    const avatars=e.splitAmong.map(m=>{
+      const i=mi(m),c=cl(i<0?0:i);
+      return `<span style="background:${c.bg};color:${c.fg};padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700">${h(m)}</span>`;
+    }).join(' ');
+    const editorHTML=editId===e.id?buildEditor(e):'';
+    return `<div class="exp-item" id="ei-${e.id}">
+      <div class="exp-main">
+        <div class="exp-icon">${cat.emoji}</div>
+        <div class="exp-body">
+          <div class="exp-name">${h(e.desc)}</div>
+          <div class="exp-meta">
+            Paid by <b style="color:${pc.fg}">${h(e.payer)}</b> &nbsp;&middot;&nbsp; ${e.splitAmong.length} people<br>
+            <span style="display:flex;flex-wrap:wrap;gap:3px;margin-top:2px">${avatars}</span>
+          </div>
         </div>
-      </div>
-      <div class="exp-right">
-        <span class="exp-amt">₹${e.amt.toFixed(2)}</span>
-        <span class="exp-per">₹${per}/person</span>
-      </div>
-      <button class="btn-del" onclick="delExpense(${e.id})" title="Delete">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      </button>
+        <div class="exp-right">
+          <span class="exp-amt">&#8377;${e.amt.toFixed(2)}</span>
+          <span class="exp-per">&#8377;${per}/person</span>
+        </div>
+        <div class="exp-acts">
+          <button class="btn-icon edit" onclick="toggleEditor(${e.id})" title="Edit split">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          </button>
+          <button class="btn-icon del" onclick="delExpense(${e.id})" title="Delete">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>${editorHTML}
     </div>`;
   }).join('');
 }
 
-/* CALC */
-function calcBalances(){
-  const paid={}, owed={};
-  members.forEach(m=>{ paid[m]=0; owed[m]=0; });
-  expenses.forEach(e=>{
-    if(paid[e.payer]!==undefined) paid[e.payer]+=e.amt;
-    const share = e.amt/e.splitAmong.length;
-    e.splitAmong.forEach(m=>{ if(owed[m]!==undefined) owed[m]+=share; });
-  });
-  const net={};
-  members.forEach(m=>{ net[m]=+(( paid[m]-owed[m]).toFixed(2)); });
-  return {paid,owed,net};
+/* ══ SPLIT EDITOR ══ */
+function buildEditor(exp){
+  const pills=members.map((m,i)=>{
+    const c=cl(i),on=exp.splitAmong.includes(m);
+    return `<label class="split-pill${on?' on':''}" onclick="editorPillClick(this,${exp.id})">
+      <input type="checkbox"${on?' checked':''} value="${h(m)}"/>
+      <div style="background:${c.bg};color:${c.fg};width:22px;height:22px;font-size:10px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700">${m[0].toUpperCase()}</div>
+      ${h(m)}</label>`;
+  }).join('');
+  const per=(exp.amt/exp.splitAmong.length).toFixed(2);
+  return `<div class="split-editor">
+    <div class="se-header">
+      <span class="se-title">Edit Split</span>
+      <span class="se-preview" id="se-prev-${exp.id}">&#8377;${exp.amt.toFixed(2)} &#247; ${exp.splitAmong.length} = &#8377;${per}/person</span>
+    </div>
+    <div class="se-tags" id="se-tags-${exp.id}">${pills}</div>
+    <div class="se-actions">
+      <button class="btn-save" onclick="saveSplit(${exp.id})">&#10003; Save Changes</button>
+      <button class="btn-cancel" onclick="closeEditor()">Cancel</button>
+    </div>
+  </div>`;
+}
+function toggleEditor(id){
+  editId=editId===id?null:id;renderExpenses();
+  if(editId)setTimeout(()=>{const el=document.getElementById('ei-'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})},60);
+}
+function closeEditor(){editId=null;renderExpenses()}
+function editorPillClick(lbl,expId){
+  const chk=lbl.querySelector('input');chk.checked=!chk.checked;lbl.classList.toggle('on',chk.checked);
+  const exp=expenses.find(e=>e.id===expId);if(!exp)return;
+  const sel=[...document.querySelectorAll('#se-tags-'+expId+' input:checked')];
+  const prev=document.getElementById('se-prev-'+expId);
+  if(prev)prev.textContent=sel.length
+    ?'₹'+exp.amt.toFixed(2)+' ÷ '+sel.length+' = ₹'+(exp.amt/sel.length).toFixed(2)+'/person'
+    :'Select at least 1 person';
+}
+function saveSplit(expId){
+  const sel=[...document.querySelectorAll('#se-tags-'+expId+' input:checked')].map(c=>c.value);
+  if(!sel.length){toast('Select at least 1 person.',false);return}
+  const exp=expenses.find(e=>e.id===expId);
+  if(exp)exp.splitAmong=sel;
+  editId=null;renderExpenses();toast('Split updated ✓');
 }
 
+/* ══ BALANCES ══ */
+function calcBal(){
+  const paid={},owed={};
+  members.forEach(m=>{paid[m]=0;owed[m]=0});
+  expenses.forEach(e=>{
+    if(paid[e.payer]!==undefined)paid[e.payer]+=e.amt;
+    const sh=e.amt/e.splitAmong.length;
+    e.splitAmong.forEach(m=>{if(owed[m]!==undefined)owed[m]+=sh});
+  });
+  const net={};
+  members.forEach(m=>{net[m]=+((paid[m]-owed[m]).toFixed(2))});
+  return{paid,owed,net};
+}
 function renderBalances(){
-  const {paid,owed,net} = calcBalances();
-  const total = expenses.reduce((s,e)=>s+e.amt,0);
+  const{paid,owed,net}=calcBal();
+  const total=expenses.reduce((s,e)=>s+e.amt,0);
   document.getElementById('s-total').textContent='₹'+total.toFixed(2);
   document.getElementById('s-count').textContent=expenses.length;
-  document.getElementById('s-per').textContent=members.length?'₹'+(total/members.length).toFixed(2):'₹0';
-  const tbody = document.getElementById('balance-tbody');
-  if(!members.length){ tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#7a9a9c;">Koi member nahi</td></tr>'; return; }
-  tbody.innerHTML = members.map((m,i)=>{
-    const c=color(i), n=net[m]||0;
-    const badge = n>0.01?`<span class="badge-get">+₹${n.toFixed(2)} milna hai</span>`
-      :n<-0.01?`<span class="badge-owe">₹${Math.abs(n).toFixed(2)} dena hai</span>`
-      :`<span class="badge-even">Barabar</span>`;
-    return `<tr>
-      <td><span class="av-sm" style="background:${c.bg};color:${c.fg}">${m[0].toUpperCase()}</span>${m}</td>
-      <td>₹${(paid[m]||0).toFixed(2)}</td>
-      <td>₹${(owed[m]||0).toFixed(2)}</td>
-      <td>${badge}</td>
-    </tr>`;
+  document.getElementById('s-members').textContent=members.length;
+  const tb=document.getElementById('balance-tbody');
+  if(!members.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#7a9a9c">No members yet</td></tr>';return}
+  tb.innerHTML=members.map((m,i)=>{
+    const c=cl(i),n=net[m]||0;
+    const badge=n>0.01?`<span class="badge-get">+&#8377;${n.toFixed(2)} to receive</span>`
+      :n<-0.01?`<span class="badge-owe">&#8377;${Math.abs(n).toFixed(2)} to pay</span>`
+      :`<span class="badge-even">Settled</span>`;
+    return `<tr><td><span class="av-sm" style="background:${c.bg};color:${c.fg}">${m[0].toUpperCase()}</span>${h(m)}</td><td>&#8377;${(paid[m]||0).toFixed(2)}</td><td>&#8377;${(owed[m]||0).toFixed(2)}</td><td>${badge}</td></tr>`;
   }).join('');
 }
 
-function renderSettle(){
-  const {net}=calcBalances();
+/* ══ SETTLE UP ══ */
+function calcTransactions(){
+  const{net}=calcBal();
   const cred=members.filter(m=>(net[m]||0)>0.01).map(m=>({name:m,amt:net[m]}));
   const debt=members.filter(m=>(net[m]||0)<-0.01).map(m=>({name:m,amt:-net[m]}));
   const txns=[];
-  const c=cred.map(x=>({...x})), d=debt.map(x=>({...x}));
+  const c=cred.map(x=>({...x})),d=debt.map(x=>({...x}));
   let ci=0,di=0;
   while(ci<c.length&&di<d.length){
     const amt=Math.min(c[ci].amt,d[di].amt);
-    if(amt>0.01) txns.push({from:d[di].name,to:c[ci].name,amt});
-    c[ci].amt-=amt; d[di].amt-=amt;
-    if(c[ci].amt<0.01)ci++; if(d[di].amt<0.01)di++;
+    if(amt>0.01)txns.push({key:d[di].name+'→'+c[ci].name,from:d[di].name,to:c[ci].name,amt});
+    c[ci].amt-=amt;d[di].amt-=amt;
+    if(c[ci].amt<0.01)ci++;if(d[di].amt<0.01)di++;
   }
+  return txns;
+}
+function markSettled(key){
+  settledSet.add(key);renderSettle();
+  toast('Payment marked as settled ✓');
+}
+function unmarkSettled(key){
+  settledSet.delete(key);renderSettle();
+  toast('Payment marked as pending');
+}
+function renderSettle(){
+  const txns=calcTransactions();
   const el=document.getElementById('settle-list');
   if(!txns.length){
-    el.innerHTML=`<div class="empty-state"><span class="empty-icon">${expenses.length?'🎉':'📋'}</span>${expenses.length?'Sab barabar hai! Koi payment pending nahi.':'Pehle kuch expenses add karo!'}</div>`;
+    el.innerHTML=`<div class="empty-state"><span class="ei">${expenses.length?'🎉':'📋'}</span>${expenses.length?'Everyone is settled up! No pending payments.':'Add some expenses to calculate who owes whom.'}</div>`;
     return;
   }
   el.innerHTML=txns.map(t=>{
-    const fi=memberIdx(t.from),ti2=memberIdx(t.to);
-    const fc=color(fi<0?0:fi), tc=color(ti2<0?0:ti2);
-    return `<div class="settle-item">
+    const fi=mi(t.from),ti=mi(t.to);
+    const fc=cl(fi<0?0:fi),tc=cl(ti<0?0:ti);
+    const done=settledSet.has(t.key);
+    return `<div class="settle-item${done?' done':''}">
       <div class="settle-names">
-        <div class="member-avatar" style="background:${fc.bg};color:${fc.fg};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">${t.from[0].toUpperCase()}</div>
-        <span class="settle-from">${t.from}</span>
-        <span class="settle-arrow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </span>
-        <span class="settle-to">${t.to}</span>
-        <div class="member-avatar" style="background:${tc.bg};color:${tc.fg};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">${t.to[0].toUpperCase()}</div>
+        <div class="member-avatar" style="background:${fc.bg};color:${fc.fg};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">${t.from[0].toUpperCase()}</div>
+        <span class="settle-from">${h(t.from)}</span>
+        <span class="settle-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="settle-to">${h(t.to)}</span>
+        <div class="member-avatar" style="background:${tc.bg};color:${tc.fg};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">${t.to[0].toUpperCase()}</div>
       </div>
-      <div class="settle-amt-box">₹${t.amt.toFixed(2)}</div>
+      <div class="settle-right">
+        <div class="settle-amt-box">&#8377;${t.amt.toFixed(2)}</div>
+        ${done
+          ?`<button class="btn-settled" onclick="unmarkSettled('${js(t.key)}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Paid</button>`
+          :`<button class="btn-settle" onclick="markSettled('${js(t.key)}')">Mark as Paid</button>`
+        }
+      </div>
     </div>`;
   }).join('');
 }
 
+/* ══ TABS ══ */
 function showTab(tab){
-  ['expenses','balances','settle'].forEach(t=>{
+  ['expenses','balances','settle','categories'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
   document.querySelectorAll('.tab-btn').forEach((btn,i)=>{
-    btn.classList.toggle('active',['expenses','balances','settle'][i]===tab);
+    btn.classList.toggle('active',['expenses','balances','settle','categories'][i]===tab);
   });
-  if(tab==='balances') renderBalances();
-  if(tab==='settle') renderSettle();
+  if(tab==='balances')renderBalances();
+  if(tab==='settle')renderSettle();
+  if(tab==='categories')renderCatList();
 }
 
-renderMembers(); updatePayer(); updateSplit();
+/* ── INIT ── */
+renderMembers();syncPayer();syncCatSelect();rebuildFormSplit(false);
 </script>
 </body>
 </html>
